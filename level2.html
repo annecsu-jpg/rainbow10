@@ -3,80 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第一關：湊十彩虹橋</title>
+    <title>第二關：雙倍鏡像森林</title>
     <style>
-        body { font-family: 'PingFang TC', sans-serif; background-color: #f0f9ff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        #game-container { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 500px; }
-        .ten-frame { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px auto; background: #e0f2fe; padding: 10px; border-radius: 10px; }
-        .slot { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px dashed #bae6fd; }
-        .dot { width: 40px; height: 40px; border-radius: 50%; background: #f87171; }
-        .btn { padding: 15px; font-size: 20px; cursor: pointer; border: none; background: #0ea5e9; color: white; border-radius: 10px; box-shadow: 0 4px #0369a1; width: 60px; }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px #0369a1; }
-        #next-level-btn { display: none; margin-top: 20px; padding: 15px 30px; background: #22c55e; color: white; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 24px; animation: bounce 1s infinite; }
-        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .progress { color: #64748b; font-size: 18px; margin-bottom: 10px; }
+        body { font-family: 'PingFang TC', sans-serif; background-color: #f0fdf4; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        #game-container { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 600px; }
+        .forest { display: flex; justify-content: space-around; margin: 20px 0; }
+        .tree { width: 150px; height: 200px; background: #86efac; border-radius: 50% 50% 0 0; position: relative; border: 4px solid #166534; cursor: pointer; }
+        .apple { width: 25px; height: 25px; background: #ef4444; border-radius: 50%; position: absolute; box-shadow: inset -2px -2px rgba(0,0,0,0.2); }
+        .instruction { font-size: 20px; color: #166534; font-weight: bold; }
+        #check-btn { padding: 15px 30px; font-size: 20px; background: #22c55e; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1 style="color: #0369a1;">🌈 第一關：湊十彩虹橋</h1>
-    <div class="progress" id="progress">進度：0 / 20</div>
-    <div id="question" style="font-size: 28px; font-weight: bold;"></div>
-    <div class="ten-frame" id="tenFrame"></div>
-    <div class="options" id="options" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"></div>
+    <h1 style="color: #166534;">🌳 第二關：雙倍鏡像森林</h1>
+    <p class="instruction">左邊有幾顆蘋果，右邊就要種幾顆喔！</p>
+    <div id="progress">進度：0 / 10</div>
     
-    <a href="level2.html" id="next-level-btn">🌟 挑戰第二關！ 🌟</a>
+    <div class="forest">
+        <div>
+            <p>左邊的樹</p>
+            <div id="leftTree" class="tree"></div>
+        </div>
+        <div>
+            <p>你的樹 (點擊種蘋果)</p>
+            <div id="rightTree" class="tree" onclick="addApple(event)"></div>
+        </div>
+    </div>
+
+    <div id="equation" style="font-size: 24px; height: 30px; margin: 10px 0;"></div>
+    <button id="check-btn" onclick="checkAnswer()">檢查看看</button>
+    <br>
+    <a href="level3.html" id="next-level-btn" style="display:none; text-decoration:none; color:blue; font-weight:bold; margin-top:20px;">下一關：數字大跳躍 >></a>
 </div>
 
-<audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg"></audio>
-
 <script>
-    let currentNum = 0;
+    let targetCount = 0;
+    let userCount = 0;
     let winCount = 0;
 
     function initGame() {
-        if (winCount >= 20) {
-            document.getElementById('question').innerText = "太棒了！你完成了！";
-            document.getElementById('tenFrame').style.display = 'none';
-            document.getElementById('options').style.display = 'none';
-            document.getElementById('next-level-btn').style.display = 'inline-block';
-            document.getElementById('winSound').play();
+        if (winCount >= 10) {
+            document.querySelector('.instruction').innerText = "你太棒了！鏡像魔法成功！";
+            document.getElementById('next-level-btn').style.display = 'block';
             return;
         }
-        currentNum = Math.floor(Math.random() * 9) + 1;
-        render();
+        targetCount = Math.floor(Math.random() * 9) + 1; // 1-9 的雙倍
+        userCount = 0;
+        document.getElementById('progress').innerText = `進度：${winCount} / 10`;
+        document.getElementById('equation').innerText = "";
+        drawTree('leftTree', targetCount);
+        drawTree('rightTree', 0);
     }
 
-    function render() {
-        document.getElementById('progress').innerText = `進度：${winCount} / 20`;
-        document.getElementById('question').innerText = `${currentNum} + ? = 10`;
-        const frame = document.getElementById('tenFrame');
-        frame.innerHTML = '';
-        for (let i = 0; i < 10; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'slot';
-            if (i < currentNum) slot.innerHTML = '<div class="dot"></div>';
-            frame.appendChild(slot);
-        }
-        const opt = document.getElementById('options');
-        opt.innerHTML = '';
-        for (let i = 1; i <= 9; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'btn';
-            btn.innerText = i;
-            btn.onclick = () => {
-                if (currentNum + i === 10) {
-                    winCount++;
-                    initGame();
-                } else {
-                    btn.style.background = '#ef4444';
-                    setTimeout(() => btn.style.background = '#0ea5e9', 500);
-                }
-            };
-            opt.appendChild(btn);
+    function drawTree(treeId, count) {
+        const tree = document.getElementById(treeId);
+        tree.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const apple = document.createElement('div');
+            apple.className = 'apple';
+            // 隨機在樹範圍內分布
+            apple.style.left = Math.random() * 110 + 10 + 'px';
+            apple.style.top = Math.random() * 100 + 10 + 'px';
+            tree.appendChild(apple);
         }
     }
+
+    function addApple(event) {
+        if (event.target.id !== 'rightTree' && event.target.className !== 'tree') return;
+        userCount++;
+        const apple = document.createElement('div');
+        apple.className = 'apple';
+        apple.style.left = (event.offsetX - 12) + 'px';
+        apple.style.top = (event.offsetY - 12) + 'px';
+        document.getElementById('rightTree').appendChild(apple);
+    }
+
+    function checkAnswer() {
+        if (userCount === targetCount) {
+            document.getElementById('equation').innerText = `${targetCount} + ${targetCount} = ${targetCount * 2} ✨`;
+            winCount++;
+            setTimeout(initGame, 1500);
+        } else {
+            alert("數量不對喔，再試試看！");
+            userCount = 0;
+            drawTree('rightTree', 0);
+        }
+    }
+
     initGame();
 </script>
 </body>
