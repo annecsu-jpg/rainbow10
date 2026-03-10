@@ -3,52 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第三關：跳跳虎過河</title>
+    <title>第三關：跳跳虎過河 - 破十法</title>
     <style>
-        :root { --river-blue: #7dd3fc; --stone-gray: #94a3b8; --tiger-orange: #fb923c; }
-        body { font-family: 'PingFang TC', sans-serif; background-color: #e0f2fe; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        :root { --river-blue: #bae6fd; --stone-gray: #64748b; --tiger-orange: #fb923c; }
+        body { font-family: 'PingFang TC', sans-serif; background-color: #f0f9ff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        #game-container { background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; width: 95%; max-width: 900px; }
         
-        #game-container { background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; width: 95%; max-width: 900px; position: relative; }
+        .river { background: var(--river-blue); height: 180px; border-radius: 20px; display: flex; align-items: center; padding: 0 40px; gap: 12px; overflow-x: auto; border-bottom: 8px solid #38bdf8; position: relative; margin: 20px 0; }
+        .stone { min-width: 50px; height: 50px; background: var(--stone-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; border: 3px solid #334155; position: relative; z-index: 5; }
+        .stone.special { background: #f87171; border-color: #991b1b; transform: scale(1.1); }
         
-        /* 河流與石頭 */
-        .river { background: var(--river-blue); height: 200px; border-radius: 20px; display: flex; align-items: center; justify-content: flex-start; padding: 0 40px; gap: 15px; overflow-x: auto; border-bottom: 10px solid #38bdf8; position: relative; margin: 20px 0; }
-        .stone { min-width: 55px; height: 55px; background: var(--stone-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.2s; border: 4px solid #64748b; box-shadow: 0 5px #475569; position: relative; z-index: 5; }
-        .stone:hover { transform: scale(1.1); background: #cbd5e1; }
-        .stone.special { background: #f87171; border-color: #991b1b; } /* 10號石頭特別色 */
-        
-        /* 角色 */
-        #tiger { font-size: 50px; position: absolute; bottom: 85px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; pointer-events: none; }
+        #tiger { font-size: 50px; position: absolute; bottom: 75px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; }
 
-        /* 題目與提示 */
-        .display-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .question { font-size: 42px; font-weight: bold; color: #1e3a8a; background: #dbeafe; padding: 10px 30px; border-radius: 15px; }
-        .hint { font-size: 20px; color: #ef4444; font-weight: bold; height: 30px; }
+        .question-area { background: #f8fafc; padding: 20px; border-radius: 20px; border: 2px solid #e2e8f0; margin-bottom: 10px; }
+        #question-text { font-size: 48px; font-weight: bold; color: #1e3a8a; margin: 0; }
+        #hint-box { min-height: 40px; color: #e11d48; font-size: 20px; font-weight: bold; margin-top: 10px; }
 
-        #next-level-btn { display: none; margin-top: 20px; padding: 15px 30px; background: #f59e0b; color: white; border-radius: 50px; text-decoration: none; font-size: 24px; font-weight: bold; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .progress-bar { width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; margin-top: 20px; }
+        #progress-fill { height: 100%; background: #22c55e; border-radius: 5px; width: 0%; transition: 0.3s; }
+        
+        #next-level-btn { display: none; margin-top: 20px; padding: 15px 40px; background: #f59e0b; color: white; border-radius: 50px; text-decoration: none; font-size: 24px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
     <h1 style="color: #0369a1;">🐯 第三關：跳跳虎過河 (0-20)</h1>
-    <div id="progress" style="font-size: 18px; color: #64748b;">挑戰進度：0 / 20</div>
     
-    <div class="display-area">
-        <div class="hint" id="hint-text"></div>
-        <div class="question" id="question-text">8 + 5 = ?</div>
+    <div class="question-area">
+        <p id="question-text">載入中...</p>
+        <div id="hint-box"></div>
     </div>
 
     <div class="river" id="river">
         <div id="tiger">🐯</div>
-        </div>
+    </div>
 
-    <p style="color: #64748b;">點擊石頭，幫小老虎跳到正確的答案位置！</p>
-    <a href="level4.html" id="next-level-btn">🎉 成功過河！進入最後一關 🎉</a>
+    <div style="color: #64748b;">已連續答對：<span id="win-count-text">0</span> / 20</div>
+    <div class="progress-bar"><div id="progress-fill"></div></div>
+
+    <a href="level4.html" id="next-level-btn">🌟 挑戰最後一關 🌟</a>
 </div>
 
 <audio id="jumpSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
-<audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg"></audio>
 
 <script>
     let currentStart = 0;
@@ -58,52 +55,52 @@
 
     function initGame() {
         if (winCount >= 20) {
-            document.getElementById('question-text').innerText = "小老虎成功過河了！";
-            document.getElementById('hint-text').innerText = "";
+            document.querySelector('.question-area').innerHTML = "<h2>太棒了！小老虎過河囉！</h2>";
             document.getElementById('next-level-btn').style.display = 'inline-block';
-            document.getElementById('winSound').play();
             return;
         }
 
-        document.getElementById('progress').innerText = `挑戰進度：${winCount} / 20`;
-        
-        // 隨機產生題目 (加減混合，範圍 0-20，不含負數)
-        let isAddition = Math.random() > 0.4; // 60% 機率加法
-        
-        if (isAddition) {
-            currentStart = Math.floor(Math.random() * 9) + 1; // 1-9
-            let add = Math.floor(Math.random() * (20 - currentStart)) + 1;
+        // 隨機題型：加法或減法
+        let type = Math.random() > 0.5 ? 'add' : 'sub';
+        let hint = "";
+
+        if (type === 'add') {
+            currentStart = Math.floor(Math.random() * 8) + 2; // 2-9
+            let add = Math.floor(Math.random() * 8) + 3; // 3-10
             currentTarget = currentStart + add;
             document.getElementById('question-text').innerText = `${currentStart} + ${add} = ?`;
             
-            // 策略引導：如果是過 10 的加法
-            if (currentStart < 10 && currentTarget > 10) {
-                document.getElementById('hint-text').innerText = `💡 提示：先跳到 10 (加 ${10-currentStart})，再往後跳！`;
-            } else {
-                document.getElementById('hint-text').innerText = "";
+            // 加法進位提示 (湊十法)
+            if (currentStart + add > 10 && currentStart < 10) {
+                let toTen = 10 - currentStart;
+                hint = `💡 提示：${currentStart} + ${toTen} = 10，再加 ${add - toTen}`;
             }
         } else {
-            currentStart = Math.floor(Math.random() * 11) + 10; // 10-20
-            let sub = Math.floor(Math.random() * currentStart) + 1;
+            currentStart = Math.floor(Math.random() * 9) + 11; // 11-19
+            let sub = Math.floor(Math.random() * 8) + 2; // 2-9
             currentTarget = currentStart - sub;
             document.getElementById('question-text').innerText = `${currentStart} - ${sub} = ?`;
             
-            // 策略引導：如果是退位的減法
-            if (currentStart > 10 && currentTarget < 10) {
-                document.getElementById('hint-text').innerText = `💡 提示：退回到 10 (減 ${currentStart-10})，再往前跳！`;
-            } else {
-                document.getElementById('hint-text').innerText = "";
+            // 減法退位提示 (破十法)
+            // 判斷個位數是否夠減：currentStart % 10 < sub
+            if (currentStart % 10 < sub) {
+                let ones = currentStart % 10;
+                hint = `💡 提示：10 - ${sub} = ${10 - sub}，再加 ${ones} = ${10 - sub + ones}`;
             }
         }
 
+        document.getElementById('hint-box').innerText = hint;
+        document.getElementById('win-count-text').innerText = winCount;
+        document.getElementById('progress-fill').style.width = (winCount / 20 * 100) + '%';
+        
         renderStones();
         moveTiger(currentStart);
     }
 
     function renderStones() {
         const river = document.getElementById('river');
-        const oldStones = river.querySelectorAll('.stone');
-        oldStones.forEach(s => s.remove());
+        const stones = river.querySelectorAll('.stone');
+        stones.forEach(s => s.remove());
 
         for (let i = 0; i <= 20; i++) {
             const stone = document.createElement('div');
@@ -117,7 +114,6 @@
     function moveTiger(index) {
         const stones = document.querySelectorAll('.stone');
         const targetStone = stones[index];
-        // 考慮到 river 有 padding
         tiger.style.left = (targetStone.offsetLeft + 2) + 'px';
     }
 
@@ -127,21 +123,16 @@
             moveTiger(num);
             winCount++;
             element.style.background = "#22c55e";
-            
-            setTimeout(() => {
-                initGame();
-            }, 1200);
+            setTimeout(initGame, 1500);
         } else {
             element.style.background = "#ef4444";
             setTimeout(() => {
-                element.style.background = (num === 10) ? "#f87171" : "#94a3b8";
+                element.style.background = (num === 10) ? "#f87171" : "#64748b";
             }, 500);
         }
     }
 
-    // 初始化石頭以便獲取座標
     renderStones();
-    // 延遲一下確保渲染完成再放老虎
     setTimeout(initGame, 100);
 </script>
 </body>
