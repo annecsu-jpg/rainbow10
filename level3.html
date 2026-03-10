@@ -3,44 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第三關：跳跳虎過河 - 破十法</title>
+    <title>第三關：跳跳虎過河 - 點選提示</title>
     <style>
         :root { --river-blue: #bae6fd; --stone-gray: #64748b; --tiger-orange: #fb923c; }
-        body { font-family: 'PingFang TC', sans-serif; background-color: #f0f9ff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        body { font-family: 'PingFang TC', sans-serif; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
         #game-container { background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; width: 95%; max-width: 900px; }
         
-        .river { background: var(--river-blue); height: 180px; border-radius: 20px; display: flex; align-items: center; padding: 0 40px; gap: 12px; overflow-x: auto; border-bottom: 8px solid #38bdf8; position: relative; margin: 20px 0; }
-        .stone { min-width: 50px; height: 50px; background: var(--stone-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; border: 3px solid #334155; position: relative; z-index: 5; }
+        .question-area { background: #eff6ff; padding: 25px; border-radius: 20px; border: 3px solid #bfdbfe; margin-bottom: 10px; position: relative; }
+        #question-text { font-size: 56px; font-weight: bold; color: #1e3a8a; margin: 0; }
+        
+        /* 提示按鈕與文字 */
+        #hint-btn { background: #fef08a; border: 2px solid #eab308; padding: 8px 15px; border-radius: 50px; cursor: pointer; font-weight: bold; color: #854d0e; margin-top: 10px; transition: 0.2s; }
+        #hint-btn:hover { background: #fde047; transform: scale(1.05); }
+        #hint-text { display: none; color: #e11d48; font-size: 22px; font-weight: bold; margin-top: 15px; background: white; padding: 10px; border-radius: 10px; border: 1px dashed #fda4af; }
+
+        .river { background: var(--river-blue); height: 180px; border-radius: 20px; display: flex; align-items: center; padding: 0 40px; gap: 12px; overflow-x: auto; border-bottom: 10px solid #38bdf8; position: relative; margin: 20px 0; }
+        .stone { min-width: 50px; height: 50px; background: var(--stone-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; border: 3px solid #334155; z-index: 5; }
         .stone.special { background: #f87171; border-color: #991b1b; transform: scale(1.1); }
         
-        #tiger { font-size: 50px; position: absolute; bottom: 75px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; }
+        #tiger { font-size: 55px; position: absolute; bottom: 75px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; }
 
-        .question-area { background: #f8fafc; padding: 20px; border-radius: 20px; border: 2px solid #e2e8f0; margin-bottom: 10px; }
-        #question-text { font-size: 48px; font-weight: bold; color: #1e3a8a; margin: 0; }
-        #hint-box { min-height: 40px; color: #e11d48; font-size: 20px; font-weight: bold; margin-top: 10px; }
-
-        .progress-bar { width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; margin-top: 20px; }
-        #progress-fill { height: 100%; background: #22c55e; border-radius: 5px; width: 0%; transition: 0.3s; }
+        .progress-container { width: 100%; margin-top: 20px; }
+        .progress-bar { width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        #progress-fill { height: 100%; background: #22c55e; width: 0%; transition: 0.5s ease; }
         
-        #next-level-btn { display: none; margin-top: 20px; padding: 15px 40px; background: #f59e0b; color: white; border-radius: 50px; text-decoration: none; font-size: 24px; font-weight: bold; }
+        #next-level-btn { display: none; margin-top: 20px; padding: 15px 40px; background: #f59e0b; color: white; border-radius: 50px; text-decoration: none; font-size: 24px; font-weight: bold; box-shadow: 0 5px #b45309; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1 style="color: #0369a1;">🐯 第三關：跳跳虎過河 (0-20)</h1>
+    <h1 style="color: #0369a1; margin-top: 0;">🐯 第三關：跳跳虎過河 (0-20)</h1>
     
     <div class="question-area">
         <p id="question-text">載入中...</p>
-        <div id="hint-box"></div>
+        <button id="hint-btn" onclick="toggleHint()">💡 想不到嗎？點我給提示</button>
+        <div id="hint-text"></div>
     </div>
 
     <div class="river" id="river">
         <div id="tiger">🐯</div>
     </div>
 
-    <div style="color: #64748b;">已連續答對：<span id="win-count-text">0</span> / 20</div>
-    <div class="progress-bar"><div id="progress-fill"></div></div>
+    <div class="progress-container">
+        <div style="margin-bottom: 5px; color: #64748b; font-weight: bold;">答對進度：<span id="win-count-text">0</span> / 20</div>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+    </div>
 
     <a href="level4.html" id="next-level-btn">🌟 挑戰最後一關 🌟</a>
 </div>
@@ -55,41 +63,46 @@
 
     function initGame() {
         if (winCount >= 20) {
-            document.querySelector('.question-area').innerHTML = "<h2>太棒了！小老虎過河囉！</h2>";
+            document.querySelector('.question-area').innerHTML = "<h2>🎉 厲害！小老虎順利到家了！</h2>";
             document.getElementById('next-level-btn').style.display = 'inline-block';
             return;
         }
 
-        // 隨機題型：加法或減法
+        // 重置提示狀態
+        document.getElementById('hint-text').style.display = 'none';
+        document.getElementById('hint-btn').style.display = 'inline-block';
+
         let type = Math.random() > 0.5 ? 'add' : 'sub';
         let hint = "";
 
         if (type === 'add') {
-            currentStart = Math.floor(Math.random() * 8) + 2; // 2-9
-            let add = Math.floor(Math.random() * 8) + 3; // 3-10
+            currentStart = Math.floor(Math.random() * 8) + 2; 
+            let add = Math.floor(Math.random() * 8) + 3;
             currentTarget = currentStart + add;
             document.getElementById('question-text').innerText = `${currentStart} + ${add} = ?`;
             
-            // 加法進位提示 (湊十法)
-            if (currentStart + add > 10 && currentStart < 10) {
+            if (currentTarget > 10 && currentStart < 10) {
                 let toTen = 10 - currentStart;
-                hint = `💡 提示：${currentStart} + ${toTen} = 10，再加 ${add - toTen}`;
+                hint = `先跳到 10：${currentStart} + ${toTen} = 10<br>再往後跳剩下的：10 + ${add - toTen} = ${currentTarget}`;
+            } else {
+                document.getElementById('hint-btn').style.display = 'none'; // 簡單題目不給提示
             }
         } else {
-            currentStart = Math.floor(Math.random() * 9) + 11; // 11-19
-            let sub = Math.floor(Math.random() * 8) + 2; // 2-9
+            currentStart = Math.floor(Math.random() * 9) + 11; 
+            let sub = Math.floor(Math.random() * 8) + 2;
             currentTarget = currentStart - sub;
             document.getElementById('question-text').innerText = `${currentStart} - ${sub} = ?`;
             
-            // 減法退位提示 (破十法)
-            // 判斷個位數是否夠減：currentStart % 10 < sub
+            // 破十法提示邏輯
             if (currentStart % 10 < sub) {
                 let ones = currentStart % 10;
-                hint = `💡 提示：10 - ${sub} = ${10 - sub}，再加 ${ones} = ${10 - sub + ones}`;
+                hint = `個位數不夠減，先用 10 減：10 - ${sub} = ${10-sub}<br>再加上原本的 ${ones}：${10-sub} + ${ones} = ${currentTarget}`;
+            } else {
+                document.getElementById('hint-btn').style.display = 'none';
             }
         }
 
-        document.getElementById('hint-box').innerText = hint;
+        document.getElementById('hint-text').innerHTML = hint;
         document.getElementById('win-count-text').innerText = winCount;
         document.getElementById('progress-fill').style.width = (winCount / 20 * 100) + '%';
         
@@ -97,10 +110,15 @@
         moveTiger(currentStart);
     }
 
+    function toggleHint() {
+        const h = document.getElementById('hint-text');
+        h.style.display = h.style.display === 'none' ? 'block' : 'none';
+    }
+
     function renderStones() {
         const river = document.getElementById('river');
-        const stones = river.querySelectorAll('.stone');
-        stones.forEach(s => s.remove());
+        const old = river.querySelectorAll('.stone');
+        old.forEach(s => s.remove());
 
         for (let i = 0; i <= 20; i++) {
             const stone = document.createElement('div');
