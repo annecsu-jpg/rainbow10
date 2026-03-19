@@ -3,80 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第一關：湊十彩虹橋</title>
+    <title>第一關：森林好朋友數數看</title>
     <style>
-        body { font-family: 'PingFang TC', sans-serif; background-color: #f0f9ff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        #game-container { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 500px; }
-        .ten-frame { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px auto; background: #e0f2fe; padding: 10px; border-radius: 10px; }
-        .slot { width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px dashed #bae6fd; }
-        .dot { width: 40px; height: 40px; border-radius: 50%; background: #f87171; }
-        .btn { padding: 15px; font-size: 20px; cursor: pointer; border: none; background: #0ea5e9; color: white; border-radius: 10px; box-shadow: 0 4px #0369a1; width: 60px; }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px #0369a1; }
-        #next-level-btn { display: none; margin-top: 20px; padding: 15px 30px; background: #22c55e; color: white; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 24px; animation: bounce 1s infinite; }
-        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .progress { color: #64748b; font-size: 18px; margin-bottom: 10px; }
+        :root { --main-blue: #0ea5e9; --soft-bg: #f0f9ff; }
+        body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background-color: var(--soft-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        
+        #game-container { background: white; padding: 2rem; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; width: 95%; max-width: 800px; border: 6px solid #bae6fd; }
+        
+        /* 增加草地/池塘區域的排版 */
+        .playground { display: flex; justify-content: space-around; align-items: center; background: #f0fdf4; border: 3px solid #dcfce7; padding: 30px; border-radius: 30px; margin: 20px 0; min-height: 220px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); }
+        
+        .group { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(45px, 1fr)); gap: 8px; justify-items: center; align-content: center; max-width: 300px; }
+        
+        .animal { font-size: 40px; transition: transform 0.3s; animation: bounce 2s ease-in-out infinite; display: inline-block; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.05); } }
+        
+        .plus-sign { font-size: 60px; font-weight: bold; color: #10b981; margin: 0 15px; }
+        
+        .math-box { font-size: 40px; font-weight: bold; color: #1e3a8a; margin: 25px 0; background: #f8fafc; padding: 15px; border-radius: 20px; border: 2px solid #e2e8f0; }
+        input[type="number"] { width: 100px; font-size: 45px; padding: 8px; border-radius: 15px; border: 4px solid #cbd5e1; text-align: center; color: #1e293b; background: white; }
+        
+        .btn { padding: 18px 50px; font-size: 24px; background: #0ea5e9; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 6px #0369a1; transition: 0.2s; font-weight: bold; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 2px #0369a1; }
+
+        .progress { color: #64748b; font-size: 20px; margin-bottom: 10px; font-weight: bold; }
+        #next-level-btn { display: none; margin-top: 20px; padding: 15px 40px; background: #22c55e; color: white; border-radius: 50px; text-decoration: none; font-size: 26px; font-weight: bold; box-shadow: 0 6px #166534; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1 style="color: #0369a1;">🌈 第一關：湊十彩虹橋</h1>
-    <div class="progress" id="progress">進度：0 / 20</div>
-    <div id="question" style="font-size: 28px; font-weight: bold;"></div>
-    <div class="ten-frame" id="tenFrame"></div>
-    <div class="options" id="options" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"></div>
+    <h1 style="color: #0369a1; margin-top: 0;">🐶 森林好朋友數數看</h1>
+    <div class="progress" id="progress">挑戰進度：0 / 20</div>
     
-    <a href="level2.html" id="next-level-btn">🌟 挑戰第二關！ 🌟</a>
+    <p style="font-size: 22px; color: #475569; font-weight: bold;">數數看，這裡總共有幾個好朋友呢？</p>
+
+    <div class="playground">
+        <div id="group1" class="group"></div>
+        <div class="plus-sign">＋</div>
+        <div id="group2" class="group"></div>
+    </div>
+
+    <div class="math-box">
+        <span id="num1">?</span> ＋ <span id="num2">?</span> ＝ 
+        <input type="number" id="answer-input" placeholder="?" min="0" onkeyup="if(event.keyCode==13) checkAnswer()">
+    </div>
+
+    <button class="btn" id="check-btn" onclick="checkAnswer()">檢查答案</button>
+    <a href="level2.html" id="next-level-btn">🌟 太厲害了！去下一關 🌟</a>
 </div>
 
-<audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg"></audio>
+<audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg"></audio>
 
 <script>
-    let currentNum = 0;
+    let n1 = 0, n2 = 0, currentAnswer = 0;
     let winCount = 0;
+    // 加入了小狗、小貓、小鴨、小兔、小雞
+    const animals = ["🐶", "🐱", "🦆", "🐰", "🐥", "🐻", "🐼"];
 
     function initGame() {
         if (winCount >= 20) {
-            document.getElementById('question').innerText = "太棒了！你完成了！";
-            document.getElementById('tenFrame').style.display = 'none';
-            document.getElementById('options').style.display = 'none';
+            document.querySelector('.playground').style.display = 'none';
+            document.querySelector('.math-box').style.display = 'none';
+            document.getElementById('check-btn').style.display = 'none';
             document.getElementById('next-level-btn').style.display = 'inline-block';
-            document.getElementById('winSound').play();
+            document.getElementById('progress').innerText = "20 題挑戰成功！";
             return;
         }
-        currentNum = Math.floor(Math.random() * 9) + 1;
-        render();
+
+        document.getElementById('progress').innerText = `挑戰進度：${winCount} / 20`;
+        
+        // 設定範圍：兩邊數字相加不超過 20
+        n1 = Math.floor(Math.random() * 9) + 1; // 1-9
+        n2 = Math.floor(Math.random() * 9) + 1; // 1-9
+        currentAnswer = n1 + n2;
+
+        document.getElementById('num1').innerText = n1;
+        document.getElementById('num2').innerText = n2;
+        document.getElementById('answer-input').value = "";
+        document.getElementById('answer-input').focus();
+
+        // 每次出題隨機選一種動物
+        const currentAnimal = animals[Math.floor(Math.random() * animals.length)];
+        renderAnimals('group1', n1, currentAnimal);
+        renderAnimals('group2', n2, currentAnimal);
     }
 
-    function render() {
-        document.getElementById('progress').innerText = `進度：${winCount} / 20`;
-        document.getElementById('question').innerText = `${currentNum} + ? = 10`;
-        const frame = document.getElementById('tenFrame');
-        frame.innerHTML = '';
-        for (let i = 0; i < 10; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'slot';
-            if (i < currentNum) slot.innerHTML = '<div class="dot"></div>';
-            frame.appendChild(slot);
-        }
-        const opt = document.getElementById('options');
-        opt.innerHTML = '';
-        for (let i = 1; i <= 9; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'btn';
-            btn.innerText = i;
-            btn.onclick = () => {
-                if (currentNum + i === 10) {
-                    winCount++;
-                    initGame();
-                } else {
-                    btn.style.background = '#ef4444';
-                    setTimeout(() => btn.style.background = '#0ea5e9', 500);
-                }
-            };
-            opt.appendChild(btn);
+    function renderAnimals(groupId, count, char) {
+        const container = document.getElementById(groupId);
+        container.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const div = document.createElement('div');
+            div.className = 'animal';
+            div.innerText = char;
+            // 隨機一點點延遲讓動畫錯開，看起來更自然
+            div.style.animationDelay = (Math.random() * 2) + 's';
+            container.appendChild(div);
         }
     }
+
+    function checkAnswer() {
+        const userAns = parseInt(document.getElementById('answer-input').value);
+        if (userAns === currentAnswer) {
+            document.getElementById('correctSound').play();
+            winCount++;
+            initGame();
+        } else {
+            alert("再數一次看看喔！左邊有 " + n1 + " 個，右邊有 " + n2 + " 個。");
+            document.getElementById('answer-input').value = "";
+            document.getElementById('answer-input').focus();
+        }
+    }
+
+    // 初始化遊戲
     initGame();
 </script>
 </body>
